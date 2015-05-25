@@ -79,10 +79,10 @@ class SettingsTest < Test::Unit::TestCase
     assert_setting nil, :two, user1
     assert_setting nil, :one, user2
 
-    assert_equal({ "one" => 1}, user1.settings.all('one'))
-    assert_equal({ "two" => 2}, user2.settings.all('two'))
-    assert_equal({ "one" => 1}, user1.settings.all('o'))
-    assert_equal({}, user1.settings.all('non_existing_var'))
+    assert_equal({ "one" => 1}, user1.settings.all_hash('one'))
+    assert_equal({ "two" => 2}, user2.settings.all_hash('two'))
+    assert_equal({ "one" => 1}, user1.settings.all_hash('o'))
+    assert_equal({}, user1.settings.all_hash('non_existing_var'))
   end
 
   def test_target_scope_is_instance_safe
@@ -130,10 +130,10 @@ class SettingsTest < Test::Unit::TestCase
   end
   
   def test_all
-    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all)
-    assert_equal({ "test2" => "bar" }, Settings.all('test2'))
-    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all('test'))
-    assert_equal({}, Settings.all('non_existing_var'))
+    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all_hash)
+    assert_equal({ "test2" => "bar" }, Settings.all_hash('test2'))
+    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all_hash('test'))
+    assert_equal({}, Settings.all_hash('non_existing_var'))
   end
   
   def test_merge
@@ -210,14 +210,14 @@ class SettingsTest < Test::Unit::TestCase
   def test_all_includes_defaults
     Settings.defaults[:foo] = 'bar'
     user = User.create! :name => 'Mr. Foo'
-    assert_equal({ 'foo' => 'bar' }, user.settings.all)
+    assert_equal({ 'foo' => 'bar' }, user.settings.all_hash)
   end
   
   def test_issue_18
     Settings.one = 'value1'
     User.settings.two = 'value2'
     
-    assert_equal({'two' => 'value2'}, User.settings.all)
+    assert_equal({'two' => 'value2'}, User.settings.all_hash)
   end
   
 
