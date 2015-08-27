@@ -1,7 +1,7 @@
 class Settings < ActiveRecord::Base
   class SettingNotFound < RuntimeError; end
 
-  cattr_accessor :defaults
+  mattr_accessor :defaults
   self.defaults = {}.with_indifferent_access
 
   #get or set a variable with the variable as the called method
