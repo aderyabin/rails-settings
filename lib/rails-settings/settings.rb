@@ -101,6 +101,33 @@ class Settings < ActiveRecord::Base
     Settings.where(target_type: target_type, target_id: target_id)
   end
 
+  ENABLE_MODES = [:on, :enabled, true, :true].freeze
+  mattr_accessor :enabled
+  self.enabled = true
+
+  def self.enabled?
+    self.enabled
+  end
+
+  def self.disable!
+    self.mode(:off)
+  end
+
+  def self.mode(mode)
+    new_mode = ENABLE_MODES.include?(mode)
+    if block_given?
+      current_mode = self.enabled
+      begin
+        self.enabled = new_mode
+        yield
+      ensure
+        self.enabled = current_mode
+      end
+    else
+      self.enabled = new_mode
+    end
+  end
+
   #Deprecated!
   def self.reload # :nodoc:
     self

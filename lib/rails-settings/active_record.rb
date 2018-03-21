@@ -1,19 +1,23 @@
 ActiveRecord::Base.class_eval do
   def self.has_settings
     class_eval do
+      def self.settings_class
+        Settings.enabled? ? ScopedSettings : FakeSettings
+      end
+
       def settings
-        ScopedSettings.for_target(self)
+        self.class.settings_class.for_target(self)
       end
 
       def self.settings
-        ScopedSettings.for_target(self)
+        settings_class.for_target(self)
       end
 
       def settings=(hash)
         hash.each { |k,v| settings[k] = v }
       end
 
-      after_destroy { |user| user.settings.target_scoped.delete_all }
+      after_destroy { |user| user.settings.target_scoped.delete_all if Settings.enabled? }
 
       scope_method = ActiveRecord::VERSION::MAJOR < 3 ? :named_scope : :scope
 
